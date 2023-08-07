@@ -41,9 +41,9 @@ commands = pytest\n\
     rev: 5.12.0\n\
     hooks:\n\
     - id: isort\n\
-      name: isort (python)\n\
+      name: isort (python)\n\n\
   - repo: https://github.com/sourcery-ai/sourcery\n\
-    rev: v1.4.0\n\
+    rev: v1.6.0\n\
     hooks:\n\
     - id: sourcery\n\
       # The best way to use Sourcery in a pre-commit hook:\n\

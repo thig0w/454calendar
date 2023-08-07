@@ -15,6 +15,7 @@ def test_leap_years():
 
 
 def test_leap_years_contents():
+    # sourcery skip: no-loop-in-tests
     for year in range(2000, 2030):
         c = Cal454(year).year_days_by_week()
         assert len(c) == 12
@@ -29,5 +30,5 @@ def test_leap_years_contents():
         assert len(c[8]) == 4
         assert len(c[9]) == 4
         assert len(c[10]) == 5
-        weeks_last_month = Cal454.has_43_weeks(year)
+        weeks_last_month = 5 if Cal454.has_43_weeks(year) else 4
         assert len(c[11]) == weeks_last_month

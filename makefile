@@ -10,7 +10,7 @@ $(VENV)/bin/activate: requirements.txt
 	$(PIP) install -r requirements.txt
 
 run: $(VENV)/bin/activate
-	$(PYTHON) main.py
+	$(PYTHON) cli.py 2023
 
 cleancache:
 	find . -name "__pycache__" -exec rm -rf {} +
@@ -21,6 +21,7 @@ clean: cleancache
 	rm -rf $(VENV)
 	rm -rf .tox
 	rm -rf .pre-commit-config.yaml tox.ini pytest.ini
+	rm -rf dist retailcalendar.egg-info
 
 devenv: $(VENV)/bin/activate tox.ini pytest.ini .pre-commit-config.yaml
 	$(PIP) install black pre-commit pydocstyle pytest pytest-clarity pytest-dotenv tox ruff httpx isort sourcery
@@ -32,5 +33,9 @@ precommit: devenv
 	ruff . --fix
 	pre-commit run --all-files
 	tox
+
+build: $(VENV)/bin/activate
+	$(PYTHON) -m pip install --upgrade build
+	$(PYTHON) -m build
 
 include files.mk
