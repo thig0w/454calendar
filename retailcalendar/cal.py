@@ -127,9 +127,7 @@ class Cal454:
         months_per_row = max(3, line_months)
         week_number_size = 4
         month_width = ((width_col + 1) * 7) + week_number_size
-        cal_size = (
-            (month_width + space_month + week_number_size) * months_per_row
-        ) - space_month
+        cal_size = ((month_width + space_month) * months_per_row) - space_month
 
         days = self.year_days_by_week()
 
@@ -172,7 +170,4 @@ if __name__ == "__main__":
     # pprint(Cal454(2023,s_month=2).month_days_by_week(12))
     # pprint(Cal454(2023,s_month=2).year_days_by_week())
     # print(Cal454(2023).format_year())
-    # Cal454(2023).format_year()
-    Cal454().has_43_weeks(2023)
-    Cal454().has_43_weeks(2024)
-    Cal454().has_43_weeks(2025)
+    Cal454(2023).format_year()
