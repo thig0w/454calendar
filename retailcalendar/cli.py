@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from datetime import date
+
 import click
 
 from retailcalendar import Cal454
@@ -6,7 +8,7 @@ from retailcalendar import Cal454
 
 @click.command()
 @click.option("-s", "--start_month", type=int, default=1)
-@click.argument("year", type=int, default=2023)
+@click.argument("year", type=int, default=date.today().year)
 def getcalendar(year, start_month):
     c = Cal454(year, s_month=start_month)
     c.format_year()
