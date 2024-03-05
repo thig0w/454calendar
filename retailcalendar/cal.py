@@ -3,6 +3,8 @@ from calendar import month_abbr, monthrange
 from datetime import date, timedelta
 from functools import lru_cache, reduce
 
+from rich import print
+
 
 class Cal454:
     """
@@ -134,24 +136,40 @@ class Cal454:
         fmt = []
         a = fmt.append
 
-        a(f"{self._year : ^{cal_size}}".rstrip())
+        a("\n\n")
+        a(f"[bold red]{self._year : ^{cal_size}}[/bold red]".rstrip())
         a("\n\n")
 
         for months in range(1, 12, months_per_row):
+            # Month Name
             for month in range(months, months + months_per_row):
                 adj_month = (
                     12
                     if (month - 1 + self._year_start_month) % 12 == 0
                     else (month - 1 + self._year_start_month) % 12
                 )
-                a(f"{month_abbr[adj_month] : ^{month_width}}{'':^{space_month}}")
+                a(
+                    f"[yellow2]{month_abbr[adj_month] : ^{month_width}}[/yellow2]"
+                    f"{'':^{space_month}}"
+                )
             fmt[-1] = fmt[-1].rstrip()
             a("\n")
+            # Day of week names
+            a(
+                f"[bright_black]wk| Su Mo Tu We Th Fr Sa"
+                f"{'':^{space_month+1}}[/bright_black]" * months_per_row
+            )
+            fmt[-1] = fmt[-1].rstrip()
+            a("\n")
+            # Week Day and days
             for week in range(5):
                 for month in range(months, months + months_per_row):
                     try:
                         # week number
-                        a(f"{days[month - 1][week][0]:02}| ")
+                        a(
+                            f"[spring_green2]{days[month - 1][week][0]:02}"
+                            f"[/spring_green2][bright_black]|[/bright_black] "
+                        )
                         for day in range(7):
                             a(f"{days[month - 1][week][1][day].day:02}")
                             a(" ")
@@ -170,4 +188,4 @@ if __name__ == "__main__":
     # pprint(Cal454(2023,s_month=2).month_days_by_week(12))
     # pprint(Cal454(2023,s_month=2).year_days_by_week())
     # print(Cal454(2023).format_year())
-    Cal454(2023).format_year()
+    Cal454(2024).format_year()
