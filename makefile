@@ -1,16 +1,9 @@
-VENV = .venv
-PYTHON = $(VENV)/bin/python3
-PIP = $(VENV)/bin/pip
+export UV_LINK_MODE=copy
 
-.PHONY: run clean cleancache devenv
+.PHONY: run clean cleancache devenv precommit build
 
-
-$(VENV)/bin/activate: requirements.txt
-	python3 -m venv $(VENV)
-	$(PIP) install -r requirements.txt
-
-run: $(VENV)/bin/activate
-	$(PYTHON) cli.py 2023
+run:
+	uv run 454cal 2026
 
 cleancache:
 	find . -name "__pycache__" -exec rm -rf {} +
@@ -18,24 +11,18 @@ cleancache:
 	rm -rf .ruff_cache
 
 clean: cleancache
-	rm -rf $(VENV)
-	rm -rf .tox
-	rm -rf .pre-commit-config.yaml tox.ini pytest.ini
+	rm -rf .venv
 	rm -rf dist retailcalendar.egg-info
 
-devenv: $(VENV)/bin/activate tox.ini pytest.ini .pre-commit-config.yaml
-	$(PIP) install black pre-commit pydocstyle pytest pytest-clarity pytest-dotenv tox ruff httpx isort sourcery
-	if [ ! -d ".git" ]; then git init; fi
-	pre-commit install
+devenv:
+	uv sync --group dev
+	uv run pre-commit install
 
 precommit: devenv
-	black .
-	ruff . --fix
-	pre-commit run --all-files
-	tox
+	uv run black .
+	uv run ruff check . --fix
+	uv run pre-commit run --all-files
+	uv run pytest
 
-build: $(VENV)/bin/activate
-	$(PYTHON) -m pip install --upgrade build
-	$(PYTHON) -m build
-
-include files.mk
+build:
+	uv build

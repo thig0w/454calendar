@@ -3,7 +3,7 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 [project]
 name = "retailcalendar"
-version = "v0.0.5"
+version = "0.0.7"
 authors = [
   { name="Thiago Weidman", email="tw@weidman.com.br" },
 ]
@@ -23,3 +23,26 @@ classifiers = [
 [project.urls]
 "Homepage" = "https://github.com/thig0w/454calendar"
 "Bug Tracker" = "https://github.com/thig0w/454calendar/issues"
+
+[dependency-groups]
+dev = [
+    "black",
+    "pre-commit",
+    "pydocstyle",
+    "pytest",
+    "pytest-clarity",
+    "pytest-dotenv",
+    "ruff",
+    "httpx",
+    "isort",
+    "sourcery",
+]
+
+[tool.pytest.ini_options]
+addopts = "-ra --showlocals --verbose"
+norecursedirs = [".git", ".pytest_cache", ".idea", "migrations", ".venv"]
+filterwarnings = [
+    "error",
+    "ignore::UserWarning",
+    "ignore:function ham\\(\\) is deprecated:DeprecationWarning",
+]
