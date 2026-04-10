@@ -1,29 +1,31 @@
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v2.3.0
+  rev: v6.0.0
   hooks:
   - id: check-yaml
   - id: end-of-file-fixer
   - id: trailing-whitespace
-  - id: fix-encoding-pragma
-  - id: requirements-txt-fixer
   - id: mixed-line-ending
 - repo: https://github.com/psf/black
-  rev: 22.10.0
+  rev: 26.3.1
   hooks:
   - id: black
 - repo: https://github.com/charliermarsh/ruff-pre-commit
-  rev: v0.0.241
+  rev: v0.15.9
   hooks:
   - id: ruff
 - repo: https://github.com/pycqa/isort
-  rev: 5.12.0
+  rev: 8.0.1
   hooks:
   - id: isort
     name: isort (python)
+- repo: https://github.com/asottile/pyupgrade
+  rev: v3.21.2
+  hooks:
+  - id: pyupgrade
 
 - repo: https://github.com/sourcery-ai/sourcery
-  rev: v1.6.0
+  rev: v1.43.0
   hooks:
   - id: sourcery
     # The best way to use Sourcery in a pre-commit hook:

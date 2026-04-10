@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from calendar import month_abbr, monthrange
 from datetime import date, timedelta
 from functools import lru_cache, reduce
