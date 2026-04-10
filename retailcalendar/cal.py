@@ -122,7 +122,9 @@ class Cal454:
     def year_days_by_week(self) -> list[list[list[int, list[date]]]]:
         return [self.month_days_by_week(i) for i in range(1, 13)]
 
-    def format_year(self, w_col=2, space_month=3, line_months=3) -> None:
+    def format_year(
+        self, w_col=2, space_month=3, line_months=3, highlight_today=True
+    ) -> None:
         width_col = max(2, w_col)
         space_month = max(3, space_month)
         months_per_row = max(3, line_months)
@@ -130,13 +132,14 @@ class Cal454:
         month_width = ((width_col + 1) * 7) + week_number_size
         cal_size = ((month_width + space_month) * months_per_row) - space_month
 
+        today = date.today()
         days = self.year_days_by_week()
 
         fmt = []
         a = fmt.append
 
         a("\n\n")
-        a(f"[bold red]{self._year : ^{cal_size}}[/bold red]".rstrip())
+        a(f"[bold red]{self._year: ^{cal_size}}[/bold red]".rstrip())
         a("\n\n")
 
         for months in range(1, 12, months_per_row):
@@ -148,7 +151,7 @@ class Cal454:
                     else (month - 1 + self._year_start_month) % 12
                 )
                 a(
-                    f"[yellow2]{month_abbr[adj_month] : ^{month_width}}[/yellow2]"
+                    f"[yellow2]{month_abbr[adj_month]: ^{month_width}}[/yellow2]"
                     f"{'':^{space_month}}"
                 )
             fmt[-1] = fmt[-1].rstrip()
@@ -156,7 +159,7 @@ class Cal454:
             # Day of week names
             a(
                 f"[bright_black]wk| Su Mo Tu We Th Fr Sa"
-                f"{'':^{space_month+1}}[/bright_black]" * months_per_row
+                f"{'':^{space_month + 1}}[/bright_black]" * months_per_row
             )
             fmt[-1] = fmt[-1].rstrip()
             a("\n")
@@ -170,7 +173,13 @@ class Cal454:
                             f"[/spring_green2][bright_black]|[/bright_black] "
                         )
                         for day in range(7):
-                            a(f"{days[month - 1][week][1][day].day:02}")
+                            d = days[month - 1][week][1][day]
+                            if highlight_today and d == today:
+                                a(
+                                    f"[bold green on purple]{d.day:02}[/bold green on purple]"
+                                )
+                            else:
+                                a(f"{d.day:02}")
                             a(" ")
                     except IndexError:
                         a(f"{'':^{month_width}}")
