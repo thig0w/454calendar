@@ -22,6 +22,7 @@ def _load_yaml() -> dict:
     return yaml.safe_load(_YAML_PATH.read_text(encoding="utf-8"))
 
 
+@lru_cache(maxsize=16)
 def _easter(year: int) -> date:
     """Compute Easter Sunday using the Anonymous Gregorian Algorithm.
 

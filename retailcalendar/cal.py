@@ -4,6 +4,10 @@ from functools import lru_cache, reduce
 
 from rich import print
 
+from .holidays import HolidayCalendar
+
+_HOLIDAY_REGION = "BR-PR-CWB"
+
 
 class Cal454:
     """
@@ -123,7 +127,12 @@ class Cal454:
         return [self.month_days_by_week(i) for i in range(1, 13)]
 
     def format_year(
-        self, w_col=2, space_month=3, line_months=3, highlight_today=True
+        self,
+        w_col=2,
+        space_month=3,
+        line_months=3,
+        highlight_today=True,
+        highlight_holidays=True,
     ) -> None:
         # sourcery skip: low-code-quality
         # TODO: Fix low code
@@ -136,6 +145,11 @@ class Cal454:
 
         today = date.today()
         days = self.year_days_by_week()
+        holiday_dates: set[date] = (
+            set(HolidayCalendar(_HOLIDAY_REGION, self._year).dates())
+            if highlight_holidays
+            else set()
+        )
 
         fmt = []
         a = fmt.append
@@ -179,6 +193,10 @@ class Cal454:
                             if highlight_today and d == today:
                                 a(
                                     f"[bold white on purple]{d.day:02}[/bold white on purple]"
+                                )
+                            elif d in holiday_dates:
+                                a(
+                                    f"[bold bright_white on green4]{d.day:02}[/bold bright_white on green4]"
                                 )
                             else:
                                 a(f"{d.day:02}")

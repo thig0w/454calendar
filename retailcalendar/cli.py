@@ -8,12 +8,19 @@ from retailcalendar import Cal454
 @click.command()
 @click.option("-s", "--start_month", type=int, default=1)
 @click.option(
-    "-d", "--days_off", is_flag=True, default=False, help="Disable today highlight"
+    "-d",
+    "--days_highlight_off",
+    is_flag=True,
+    default=False,
+    help="Disable today and holiday highlights",
 )
 @click.argument("year", type=int, default=date.today().year)
-def get_calendar(year, start_month, days_off):
+def get_calendar(year, start_month, days_highlight_off):
     c = Cal454(year, s_month=start_month)
-    c.format_year(highlight_today=not days_off)
+    c.format_year(
+        highlight_today=not days_highlight_off,
+        highlight_holidays=not days_highlight_off,
+    )
 
 
 if __name__ == "__main__":
