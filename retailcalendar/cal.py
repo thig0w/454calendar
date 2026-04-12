@@ -125,6 +125,8 @@ class Cal454:
     def format_year(
         self, w_col=2, space_month=3, line_months=3, highlight_today=True
     ) -> None:
+        # sourcery skip: low-code-quality
+        # TODO: Fix low code
         width_col = max(2, w_col)
         space_month = max(3, space_month)
         months_per_row = max(3, line_months)
@@ -176,7 +178,7 @@ class Cal454:
                             d = days[month - 1][week][1][day]
                             if highlight_today and d == today:
                                 a(
-                                    f"[bold green on purple]{d.day:02}[/bold green on purple]"
+                                    f"[bold white on purple]{d.day:02}[/bold white on purple]"
                                 )
                             else:
                                 a(f"{d.day:02}")
