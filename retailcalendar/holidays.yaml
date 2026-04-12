@@ -1,0 +1,307 @@
+# =============================================================================
+# holidays.yaml — Holiday Rules by Country and Region
+# =============================================================================
+#
+# FIELD SCHEMA:
+#
+#   name: str        — official holiday name
+#   name_en: str     — English name (optional)
+#   type: str        — rule type. Allowed values:
+#
+#     "fixed"    → same day/month every year
+#                  fields: month (int), day (int)
+#
+#     "relative" → Nth weekday of a given month
+#                  fields: month (int), weekday (str: sunday..saturday),
+#                          ordinal (int: 1=first, 2=second, -1=last)
+#
+#     "offset"   → N days before/after a base algorithm result
+#                  fields: base (str, key in `algorithms`),
+#                          offset_days (int, negative = before)
+#
+#     "complex"  → requires its own algorithm
+#                  fields: algorithm (str, key in `algorithms`)
+#
+#   observed: str    — behavior when the date falls on a weekend (optional)
+#                      "next_monday" | "nearest_weekday" | "none"
+#   since: int       — first year the holiday is in effect, inclusive (optional)
+#   notes: str       — additional remarks (optional)
+#
+# REGION HIERARCHY:
+#   Each region may inherit holidays from another via `inherits`.
+#   `inherits` accepts the code of a single parent region.
+#   When resolving holidays for a region, include the parent's holidays recursively.
+#
+#   BR
+#   ├── BR-PR
+#   │   └── BR-PR-CWB  (Curitiba)
+#   └── BR-SP
+#       └── BR-SP-SAO  (São Paulo city)
+#   US
+#
+# USAGE EXAMPLE (Python):
+#
+#   import yaml
+#   from pathlib import Path
+#
+#   def load_holidays_for_region(region: str) -> list[dict]:
+#       data = yaml.safe_load(Path("holidays.yaml").read_text(encoding="utf-8"))
+#       regions = data["regions"]
+#
+#       def collect(r: str) -> list[dict]:
+#           reg = regions.get(r, {})
+#           parent = reg.get("inherits")
+#           inherited = collect(parent) if parent else []
+#           return inherited + reg.get("holidays", [])
+#
+#       return collect(region)
+#
+#   # holidays = load_holidays_for_region("BR-SP-SAO")
+#   # holidays = load_holidays_for_region("BR")
+#   # holidays = load_holidays_for_region("US")
+#
+# =============================================================================
+
+algorithms:
+  easter:
+    description: >
+      First Sunday after the first ecclesiastical full moon occurring on or
+      after March 21 (the ecclesiastical spring equinox).
+      Implementation: Anonymous Gregorian Algorithm.
+    reference: "https://en.wikipedia.org/wiki/Date_of_Easter#Anonymous_Gregorian_algorithm"
+
+# =============================================================================
+# REGIONS
+# =============================================================================
+
+regions:
+
+  # ---------------------------------------------------------------------------
+  # BRAZIL — National Holidays
+  # ---------------------------------------------------------------------------
+  BR:
+    name: "Brazil"
+    inherits: null
+    holidays:
+      - name: "Confraternização Universal"
+        name_en: "New Year's Day"
+        type: fixed
+        month: 1
+        day: 1
+
+      - name: "Carnaval — Segunda-feira"
+        name_en: "Carnival Monday"
+        type: offset
+        base: easter
+        offset_days: -48
+
+      - name: "Carnaval — Terça-feira"
+        name_en: "Carnival Tuesday"
+        type: offset
+        base: easter
+        offset_days: -47
+
+      - name: "Sexta-feira Santa"
+        name_en: "Good Friday"
+        type: offset
+        base: easter
+        offset_days: -2
+
+      - name: "Páscoa"
+        name_en: "Easter Sunday"
+        type: complex
+        algorithm: easter
+
+      - name: "Tiradentes"
+        name_en: "Tiradentes Day"
+        type: fixed
+        month: 4
+        day: 21
+
+      - name: "Dia do Trabalho"
+        name_en: "International Workers' Day"
+        type: fixed
+        month: 5
+        day: 1
+
+      - name: "Corpus Christi"
+        name_en: "Corpus Christi"
+        type: offset
+        base: easter
+        offset_days: 60
+
+      - name: "Independência do Brasil"
+        name_en: "Brazil Independence Day"
+        type: fixed
+        month: 9
+        day: 7
+
+      - name: "Nossa Senhora Aparecida"
+        name_en: "Our Lady of Aparecida"
+        type: fixed
+        month: 10
+        day: 12
+
+      - name: "Finados"
+        name_en: "All Souls' Day"
+        type: fixed
+        month: 11
+        day: 2
+
+      - name: "Proclamação da República"
+        name_en: "Republic Proclamation Day"
+        type: fixed
+        month: 11
+        day: 15
+
+      - name: "Dia da Consciência Negra"
+        name_en: "Black Consciousness Day"
+        type: fixed
+        month: 11
+        day: 20
+        since: 2024
+        notes: "National holiday since 2024 (Lei 14.759/2023)."
+
+      - name: "Natal"
+        name_en: "Christmas Day"
+        type: fixed
+        month: 12
+        day: 25
+
+  # ---------------------------------------------------------------------------
+  # BRAZIL — State of Paraná
+  # ---------------------------------------------------------------------------
+  BR-PR:
+    name: "Paraná"
+    inherits: BR
+    holidays:
+      - name: "Emancipação do Paraná"
+        name_en: "Paraná Emancipation Day"
+        type: fixed
+        month: 12
+        day: 19
+        notes: "Paraná became an independent province from São Paulo on December 19, 1853."
+
+  # ---------------------------------------------------------------------------
+  # BRAZIL — Curitiba (inherits BR and BR-PR)
+  # ---------------------------------------------------------------------------
+  BR-PR-CWB:
+    name: "Curitiba"
+    inherits: BR-PR
+    holidays:
+      - name: "Aniversário de Curitiba"
+        name_en: "Curitiba City Anniversary"
+        type: fixed
+        month: 3
+        day: 29
+        notes: "Curitiba was founded on March 29, 1693."
+
+  # ---------------------------------------------------------------------------
+  # BRAZIL — State of São Paulo
+  # ---------------------------------------------------------------------------
+  BR-SP:
+    name: "São Paulo (state)"
+    inherits: BR
+    holidays:
+      - name: "Revolução Constitucionalista de 1932"
+        name_en: "Constitutionalist Revolution"
+        type: fixed
+        month: 7
+        day: 9
+        notes: "Start of the Constitutionalist Revolution on July 9, 1932."
+
+  # ---------------------------------------------------------------------------
+  # BRAZIL — São Paulo city (inherits BR and BR-SP)
+  # ---------------------------------------------------------------------------
+  BR-SP-SAO:
+    name: "São Paulo (city)"
+    inherits: BR-SP
+    holidays:
+      - name: "Aniversário de São Paulo"
+        name_en: "São Paulo City Anniversary"
+        type: fixed
+        month: 1
+        day: 25
+        notes: "São Paulo was founded by Jesuit missionaries on January 25, 1554."
+
+  # ---------------------------------------------------------------------------
+  # UNITED STATES — Federal Holidays
+  # ---------------------------------------------------------------------------
+  US:
+    name: "United States"
+    inherits: null
+    holidays:
+      - name: "New Year's Day"
+        type: fixed
+        month: 1
+        day: 1
+        observed: next_monday
+
+      - name: "Martin Luther King Jr. Day"
+        type: relative
+        month: 1
+        weekday: monday
+        ordinal: 3
+
+      - name: "Presidents' Day"
+        notes: "Officially 'Washington's Birthday' on the federal calendar."
+        type: relative
+        month: 2
+        weekday: monday
+        ordinal: 3
+
+      - name: "Easter Sunday"
+        type: complex
+        algorithm: easter
+        notes: "Not a federal holiday, but widely observed."
+
+      - name: "Memorial Day"
+        type: relative
+        month: 5
+        weekday: monday
+        ordinal: -1
+
+      - name: "Juneteenth National Independence Day"
+        type: fixed
+        month: 6
+        day: 19
+        observed: next_monday
+        since: 2021
+        notes: "Federal holiday since 2021 (Pub. L. 117-17)."
+
+      - name: "Independence Day"
+        type: fixed
+        month: 7
+        day: 4
+        observed: nearest_weekday
+
+      - name: "Labor Day"
+        type: relative
+        month: 9
+        weekday: monday
+        ordinal: 1
+
+      - name: "Columbus Day"
+        notes: "Observed as 'Indigenous Peoples' Day' in several states and municipalities."
+        type: relative
+        month: 10
+        weekday: monday
+        ordinal: 2
+
+      - name: "Veterans Day"
+        type: fixed
+        month: 11
+        day: 11
+        observed: nearest_weekday
+
+      - name: "Thanksgiving Day"
+        type: relative
+        month: 11
+        weekday: thursday
+        ordinal: 4
+
+      - name: "Christmas Day"
+        type: fixed
+        month: 12
+        day: 25
+        observed: nearest_weekday
