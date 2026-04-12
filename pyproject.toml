@@ -20,6 +20,9 @@ classifiers = [
 [project.scripts]
 454cal = "retailcalendar.cli:get_calendar"
 
+[tool.setuptools.package-data]
+retailcalendar = ["*.yaml"]
+
 [project.urls]
 "Homepage" = "https://github.com/thig0w/454calendar"
 "Bug Tracker" = "https://github.com/thig0w/454calendar/issues"
