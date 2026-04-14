@@ -3,7 +3,7 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 [project]
 name = "retailcalendar"
-version = "0.0.8"
+version = "1.0.0"
 authors = [
   { name="Thiago Weidman", email="tw@weidman.com.br" },
 ]
@@ -29,7 +29,6 @@ retailcalendar = ["*.yaml"]
 
 [dependency-groups]
 dev = [
-    "black",
     "pre-commit",
     "pydocstyle",
     "pytest",
@@ -39,7 +38,22 @@ dev = [
     "httpx",
     "isort",
     "sourcery",
+    "tox",
+    "tox-uv",
 ]
+
+[tool.tox]
+legacy_tox_ini = """
+[tox]
+env_list = py310, py311, py312, py313, py314
+requires = tox-uv >= 1
+parallel = auto
+
+[testenv]
+runner = uv-venv-lock-runner
+setenv = UV_LINK_MODE=copy
+commands = pytest
+"""
 
 [tool.pytest.ini_options]
 addopts = "-ra --showlocals --verbose"

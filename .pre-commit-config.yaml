@@ -30,3 +30,12 @@ repos:
     # * review only changed lines:
     # * omit the summary
     args: [--diff=git diff HEAD, --no-summary]
+
+- repo: local
+  hooks:
+  - id: tox
+    name: tox
+    language: system
+    entry: uv run tox
+    pass_filenames: false
+    always_run: true

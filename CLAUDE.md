@@ -8,10 +8,11 @@
 
 ```
 retailcalendar/
-├── __init__.py       # Exports Cal454 and HolidayCalendar
+├── __init__.py       # Exports Cal454, HolidayCalendar, CalendarTheme, THEMES
 ├── cal.py            # Core logic: Cal454 class; imports HolidayCalendar for holiday highlights
 ├── cli.py            # CLI entry point using Click
-└── holidays.py       # HolidayCalendar class + helpers (_easter, _nth_weekday, _apply_observed)
+├── holidays.py       # HolidayCalendar class + helpers (_easter, _nth_weekday, _apply_observed)
+└── themes.py         # CalendarTheme dataclass + THEMES dict (9 built-in themes) + resolve_theme()
 holidays.yaml         # Holiday rule definitions by region (BR, BR-PR, BR-PR-CWB, BR-SP, BR-SP-SAO, US)
 tests/
 ├── test_leapyear.py          # Tests for 43-week detection and calendar structure
@@ -27,7 +28,8 @@ tests/
 - **43-week year**: A 53-week fiscal year — the last month gets +1 week (5 instead of 4)
 - **`has_43_weeks()`**: Cached classmethod implementing the NRF algorithm for 53-week detection
 - Week starts on **Sunday** (`STARTING_WEEKDAY = 7` in ISO weekday notation)
-- **Holiday highlight**: `format_year()` highlights public holidays in green (`green4` bg, `bright_white` text) using `HolidayCalendar`. Region is fixed to `BR-PR-CWB` via the `_HOLIDAY_REGION` constant in `cal.py`.
+- **Holiday highlight**: `format_year()` highlights public holidays and today using colors from the active `CalendarTheme`. Region defaults to `BR-PR-CWB` (via `_HOLIDAY_REGION` constant) but is overridable via the `region` parameter.
+- **Themes**: defined in `themes.py` as `CalendarTheme` frozen dataclasses. `format_year()` accepts a theme name (string) or a `CalendarTheme` instance; `resolve_theme()` handles both. 9 built-in themes: `default`, `ocean`, `sunset`, `monokai`, `retro`, `matrix`, `sakura`, `ice`, `volcano`.
 
 ### HolidayCalendar
 
@@ -45,7 +47,9 @@ tests/
 # Run CLI
 454cal [YEAR]
 454cal --start_month 2 2025
-454cal -d 2025   # disable today + holiday highlights
+454cal -d 2025              # disable today + holiday highlights
+454cal -t ocean 2025        # color theme
+454cal -r US 2025           # holiday region
 
 # Development setup (uv)
 make devenv       # uv sync --group dev + install pre-commit hooks
@@ -82,6 +86,10 @@ Defined in `pyproject.toml`:
 The CLI default for `--start_month` is `1` (January) in `cli.py`, but the `Cal454` class default is `2` (February). Keep this in mind if changing defaults.
 
 The `-d/--days_highlight_off` flag disables **both** `highlight_today` and `highlight_holidays` in `format_year()`.
+
+The `-t/--theme` option accepts any key from `THEMES` in `themes.py` (default: `"default"`).
+
+The `-r/--region` option accepts any region code defined in `holidays.yaml` (default: `"BR-PR-CWB"`). Available: `BR`, `BR-PR`, `BR-PR-CWB`, `BR-SP`, `BR-SP-SAO`, `US`.
 
 ## Dependencies
 

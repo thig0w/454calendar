@@ -24,9 +24,20 @@ pip install retailcalendar
 
 # Disable today and holiday highlights
 454cal -d 2025
+
+# Use a color theme
+454cal -t ocean 2025
+454cal -t sunset 2025
+
+# Use a different holiday region
+454cal -r US 2025
+454cal -r BR-SP-SAO 2025
+
+# Combine options
+454cal -t matrix -r US 2025
 ```
 
-The output is a color-formatted calendar printed to the terminal, organized with 3 months per row and week numbers on the left. Public holidays are highlighted with a green background; today is highlighted in purple.
+The output is a color-formatted calendar printed to the terminal, organized with 3 months per row and week numbers on the left. Public holidays and today's date are highlighted using the active color theme.
 
 ### CLI Options
 
@@ -34,14 +45,30 @@ The output is a color-formatted calendar printed to the terminal, organized with
 |--------|---------|-------------|
 | `-s` / `--start_month` | `1` | Fiscal year start month (1–12) |
 | `-d` / `--days_highlight_off` | off | Disable today and holiday highlights |
+| `-t` / `--theme` | `default` | Color theme (see [Themes](#themes)) |
+| `-r` / `--region` | `BR-PR-CWB` | Holiday region (see [Supported Regions](#supported-regions)) |
 | `YEAR` | current year | Fiscal year to display |
+
+### Themes
+
+| Theme | Description |
+|-------|-------------|
+| `default` | Classic terminal colors — red, yellow, green, purple |
+| `ocean` | Blues and teals |
+| `sunset` | Warm oranges and golds |
+| `monokai` | Editor-inspired — magentas, chartreuse, purple |
+| `retro` | Amber CRT monitor — warm monochrome |
+| `matrix` | Green phosphor terminal — monochrome green |
+| `sakura` | Japanese cherry blossom — soft pinks |
+| `ice` | Arctic frost — crisp whites and pale blues |
+| `volcano` | Volcanic lava — deep reds and glowing yellows |
 
 ## Python API
 
 ### `Cal454` — NRF 4-5-4 Retail Calendar
 
 ```python
-from retailcalendar import Cal454
+from retailcalendar import Cal454, CalendarTheme
 
 # Create a calendar for fiscal year 2025 (starts February 2025)
 cal = Cal454(year=2025, s_month=2)
@@ -49,6 +76,21 @@ cal = Cal454(year=2025, s_month=2)
 # Display the full calendar (holidays highlighted by default)
 cal.format_year()
 cal.format_year(highlight_today=False, highlight_holidays=False)
+
+# Use a built-in color theme
+cal.format_year(theme="ocean")
+cal.format_year(theme="volcano", region="US")
+
+# Define a custom theme
+my_theme = CalendarTheme(
+    year_title="bold blue",
+    month_name="cyan",
+    day_header="grey50",
+    week_number="bright_green",
+    today="bold white on dark_blue",
+    holiday="bold white on dark_green",
+)
+cal.format_year(theme=my_theme)
 
 # Get month start/end dates (list of 12 dates)
 cal.month_start_dates()
@@ -83,8 +125,10 @@ Cal454.has_43_weeks(year=2023, s_month=1) # False
 | `w_col` | `2` | Column width per day (min 2) |
 | `space_month` | `3` | Space between month columns (min 3) |
 | `line_months` | `3` | Number of months per row (min 3) |
-| `highlight_today` | `True` | Highlight today's date in purple |
-| `highlight_holidays` | `True` | Highlight public holidays in green |
+| `highlight_today` | `True` | Highlight today's date |
+| `highlight_holidays` | `True` | Highlight public holidays |
+| `theme` | `"default"` | Color theme name or `CalendarTheme` instance |
+| `region` | `"BR-PR-CWB"` | Holiday region code |
 
 ---
 
