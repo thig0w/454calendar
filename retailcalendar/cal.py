@@ -5,8 +5,7 @@ from functools import lru_cache, reduce
 from rich import print
 
 from .holidays import HolidayCalendar
-
-_HOLIDAY_REGION = "BR-PR-CWB"
+from .themes import CalendarTheme, resolve_theme
 
 
 class Cal454:
@@ -133,6 +132,8 @@ class Cal454:
         line_months=3,
         highlight_today=True,
         highlight_holidays=True,
+        theme: str | CalendarTheme = "default",
+        region: str = "BR-PR-CWB",
     ) -> None:
         # sourcery skip: low-code-quality
         # TODO: Fix low code
@@ -143,10 +144,11 @@ class Cal454:
         month_width = ((width_col + 1) * 7) + week_number_size
         cal_size = ((month_width + space_month) * months_per_row) - space_month
 
+        t = resolve_theme(theme)
         today = date.today()
         days = self.year_days_by_week()
         holiday_dates: set[date] = (
-            set(HolidayCalendar(_HOLIDAY_REGION, self._year).dates())
+            set(HolidayCalendar(region, self._year).dates())
             if highlight_holidays
             else set()
         )
@@ -155,7 +157,7 @@ class Cal454:
         a = fmt.append
 
         a("\n\n")
-        a(f"[bold red]{self._year: ^{cal_size}}[/bold red]".rstrip())
+        a(f"[{t.year_title}]{self._year: ^{cal_size}}[/{t.year_title}]".rstrip())
         a("\n\n")
 
         for months in range(1, 12, months_per_row):
@@ -167,15 +169,15 @@ class Cal454:
                     else (month - 1 + self._year_start_month) % 12
                 )
                 a(
-                    f"[yellow2]{month_abbr[adj_month]: ^{month_width}}[/yellow2]"
+                    f"[{t.month_name}]{month_abbr[adj_month]: ^{month_width}}[/{t.month_name}]"
                     f"{'':^{space_month}}"
                 )
             fmt[-1] = fmt[-1].rstrip()
             a("\n")
             # Day of week names
             a(
-                f"[bright_black]wk| Su Mo Tu We Th Fr Sa"
-                f"{'':^{space_month + 1}}[/bright_black]" * months_per_row
+                f"[{t.day_header}]wk| Su Mo Tu We Th Fr Sa"
+                f"{'':^{space_month + 1}}[/{t.day_header}]" * months_per_row
             )
             fmt[-1] = fmt[-1].rstrip()
             a("\n")
@@ -185,19 +187,15 @@ class Cal454:
                     try:
                         # week number
                         a(
-                            f"[spring_green2]{days[month - 1][week][0]:02}"
-                            f"[/spring_green2][bright_black]|[/bright_black] "
+                            f"[{t.week_number}]{days[month - 1][week][0]:02}"
+                            f"[/{t.week_number}][{t.day_header}]|[/{t.day_header}] "
                         )
                         for day in range(7):
                             d = days[month - 1][week][1][day]
                             if highlight_today and d == today:
-                                a(
-                                    f"[bold white on purple]{d.day:02}[/bold white on purple]"
-                                )
+                                a(f"[{t.today}]{d.day:02}[/{t.today}]")
                             elif d in holiday_dates:
-                                a(
-                                    f"[bold bright_white on green4]{d.day:02}[/bold bright_white on green4]"
-                                )
+                                a(f"[{t.holiday}]{d.day:02}[/{t.holiday}]")
                             else:
                                 a(f"{d.day:02}")
                             a(" ")
